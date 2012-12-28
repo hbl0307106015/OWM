@@ -1,0 +1,18 @@
+Package: wpad
+Version: 20120910-1
+Depends: libc, libnl-tiny
+Provides: 
+Source: package/network/services/hostapd
+SourceFile: hostapd-20120910.tar.bz2
+SourceURL: git://w1.fi/srv/git/hostap.git
+License: 
+LicenseFiles: 
+Section: net
+Status: unknown ok not-installed
+Essential: no
+Priority: optional
+Maintainer: Felix Fietkau <nbd@openwrt.org>
+Architecture: ar71xx
+Installed-Size: 315766
+Description:  This package contains a full featured IEEE 802.1x/WPA/EAP/RADIUS
+ Authenticator and Supplicant
