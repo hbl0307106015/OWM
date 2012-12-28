@@ -1,10 +1,9 @@
 /*************************************************************************
     > File Name: src/ap/acs.h
-    > Author: ma6174
-    > Mail: ma6174@163.com 
-    > Created Time: 2012年12月21日 星期五 18时26分46秒
+    > Author: banglang
+    > Mail: banglang.haung@gmail.com
+    > Created Time: 2012-12
  ************************************************************************/
-
 
 #ifndef __ACS_H
 #define __ACS_H

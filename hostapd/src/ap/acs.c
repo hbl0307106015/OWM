@@ -1,9 +1,10 @@
 /*************************************************************************
-    > File Name: src/ap/acs.c
-    > Author: ma6174
-    > Mail: ma6174@163.com 
-    > Created Time: 2012年12月21日 星期五 18时09分19秒
+    > File Name: src/ap/acs.h
+    > Author: banglang
+    > Mail: banglang.haung@gmail.com
+    > Created Time: 2012-12
  ************************************************************************/
+
 
 /*
  * ACS - Automatic Channel Selection module
@@ -110,15 +111,6 @@ static void acs_file_helper(const unsigned int ideal_chan)
 	/*ok, send SIGUSR1 to it*/
 	kill(pid, SIGUSR1);
 
-	/* solution 1	
-	if(fork() == 0){
-		daemon(1,0);
-		syslog(LOG_DEBUG,"%s created acs,going in a child pid",__func__);
-		execl("/sbin/acs","acs",NULL);
-		syslog(LOG_DEBUG,"%s child failed failed",__func__);
-		exit(1);
-	}
-	*/
 	return;
 }
 
