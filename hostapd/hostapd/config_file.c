@@ -20,7 +20,8 @@
 #include "ap/wpa_auth.h"
 #include "ap/ap_config.h"
 #include "config_file.h"
-
+//Tymon
+#include <syslog.h>
 
 extern struct wpa_driver_ops *wpa_drivers[];
 
@@ -2348,6 +2349,42 @@ static int hostapd_config_fill(struct hostapd_config *conf,
 				errors++;
 			} else
 				conf->beacon_int = val;
+			//Tymon added for acs 2013-1-4
+#ifdef CONFIG_ACS
+		} else if (os_strcmp(buf, "acs_num_req_surveys") == 0) {
+			int val = atoi(pos);
+			if (val <= 0) {
+				wpa_printf(MSG_ERROR, "Line %d: invalid "
+					   "acs_num_req_surveys %d (expected > 1)",
+					   line, val);
+				errors++;
+			} else
+				conf->acs_num_req_surveys = val;
+		} else if (os_strcmp(buf, "acs_roc_duration_ms") == 0) {
+			int val = atoi(pos);
+			/* Well only Linux supports offchannel ops right now ;) */
+			if (val <= 0 || val > 5000) {
+				errors++;
+				wpa_printf(MSG_ERROR, "Line %d: invalid "
+					   "acs_roc_duration_ms %d (expected "
+					   "1..5000)", line, val);
+			} else
+				conf->acs_roc_duration_ms = val;
+#else
+		} else if (os_strcmp(buf, "acs_num_req_surveys") == 0) {
+			int val = atoi(pos);
+			wpa_printf(MSG_ERROR, "Line %d: invalid "
+				   "acs_num_req_surveys %d (CONFIG_ACS disabled)",
+				   line, val);
+			errors++;
+		} else if (os_strcmp(buf, "acs_roc_duration_ms") == 0) {
+			int val = atoi(pos);
+			wpa_printf(MSG_ERROR, "Line %d: invalid "
+				   "acs_roc_duration_ms %d (CONFIG_ACS disabled)"
+				   "1..5000)", line, val);
+			errors++;
+#endif /* CONFIG_ACS */
+			//end
 		} else if (os_strcmp(buf, "dtim_period") == 0) {
 			bss->dtim_period = atoi(pos);
 			if (bss->dtim_period < 1 || bss->dtim_period > 255) {
