@@ -28,7 +28,7 @@
 #include "dump_state.h"
 #include "ctrl_iface.h"
 
-//Tymon B scheme
+//Tymon 
 #include "ap/sta_info.h"
 #include "utils/via_utils.h"
 extern int sockfd4ReportStaInfo;
