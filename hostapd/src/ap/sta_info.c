@@ -31,6 +31,10 @@
 #include "gas_serv.h"
 #include "sta_info.h"
 
+//Tymon added for load balance
+#include "utils/via_utils.h"
+extern int set_beacon_req;
+
 static void ap_sta_remove_in_other_bss(struct hostapd_data *hapd,
 				       struct sta_info *sta);
 static void ap_handle_session_timer(void *eloop_ctx, void *timeout_ctx);
@@ -229,6 +233,13 @@ void ap_free_sta(struct hostapd_data *hapd, struct sta_info *sta)
 		os_free(sta->gas_dialog);
 	}
 #endif /* CONFIG_INTERWORKING */
+	
+	//Tymon added for load balance
+	if( (hapd->num_sta < hapd->conf->max_num_sta) &&
+			(hapd->conf->ignore_broadcast_ssid) ){
+		set_beacon_req = 1;
+		ieee802_11_set_beacon(hapd);
+	}
 
 	wpabuf_free(sta->wps_ie);
 	wpabuf_free(sta->p2p_ie);
@@ -516,6 +527,14 @@ struct sta_info * ap_sta_add(struct hostapd_data *hapd, const u8 *addr)
 	ap_sta_hash_add(hapd, sta);
 	sta->ssid = &hapd->conf->ssid;
 	ap_sta_remove_in_other_bss(hapd, sta);
+	
+	//Tymon added for load balance
+	if( (hapd->num_sta >= hapd->conf->max_num_sta) &&
+		(hapd->conf->ignore_broadcast_ssid == 0 ) ){
+		set_beacon_req = 1;
+		ieee802_11_set_beacon(hapd);
+	}
+	//
 
 	return sta;
 }
@@ -524,6 +543,14 @@ struct sta_info * ap_sta_add(struct hostapd_data *hapd, const u8 *addr)
 static int ap_sta_remove(struct hostapd_data *hapd, struct sta_info *sta)
 {
 	ieee802_1x_notify_port_enabled(sta->eapol_sm, 0);
+	//Tymon added for load balance
+	if(hapd->num_sta < hapd->conf->max_num_sta &&
+		(hapd->conf->ignore_broadcast_ssid == 1 )){
+		set_beacon_req = 1;
+		ieee802_11_set_beacon(hapd);
+	
+	}
+	//
 
 	wpa_printf(MSG_DEBUG, "Removing STA " MACSTR " from kernel driver",
 		   MAC2STR(sta->addr));

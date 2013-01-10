@@ -1,3 +1,6 @@
+#ifndef VIA_UTILS_H
+#define VIA_UTILS_H
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
@@ -35,3 +38,4 @@ typedef struct{
 	STA_STATUS status;
 }CWStationInformation;
 */
+#endif

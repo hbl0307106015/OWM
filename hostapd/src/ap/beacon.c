@@ -35,6 +35,10 @@
 #include "beacon.h"
 #include "hs20.h"
 
+//Tymon added for load-balancing
+
+#include "utils/via_utils.h"
+extern int set_beacon_req;
 
 #ifdef NEED_AP_MLME
 
@@ -450,8 +454,16 @@ void handle_probe_req(struct hostapd_data *hapd,
 	/* TODO: verify that supp_rates contains at least one matching rate
 	 * with AP configuration */
 
-	resp = hostapd_gen_probe_resp(hapd, sta, mgmt, elems.p2p != NULL,
+	//Tymon modified for load balance
+	if( (hapd->num_sta >= hapd->conf->max_num_sta)//reach client-amout limit
+		&& (hapd->conf->ignore_broadcast_ssid)//has hiden ssid
+		&& !(ap_get_sta(hapd, mgmt->sa)) )//client not in the sta list
+		resp = NULL;
+	else
+		resp = hostapd_gen_probe_resp(hapd, sta, mgmt, elems.p2p != NULL,
 				      &resp_len);
+	//end added
+
 	if (resp == NULL)
 		return;
 
@@ -566,6 +578,18 @@ void ieee802_11_set_beacon(struct hostapd_data *hapd)
 	pos = &head->u.beacon.variable[0];
 
 	/* SSID */
+	//Tymon added for load-balancing
+	if(set_beacon_req){
+		if( (hapd->num_sta >= hapd->conf->max_num_sta) 
+				&& (hapd->conf->ignore_broadcast_ssid == 0) )
+			hapd->conf->ignore_broadcast_ssid = 1;
+		else if( hapd->num_sta < hapd->conf->max_num_sta
+				&& (hapd->conf->ignore_broadcast_ssid)
+				&& set_beacon_req )
+			hapd->conf->ignore_broadcast_ssid = 0;
+		set_beacon_req = 0;
+	}
+	//
 	*pos++ = WLAN_EID_SSID;
 	if (hapd->conf->ignore_broadcast_ssid == 2) {
 		/* clear the data, but keep the correct length of the SSID */

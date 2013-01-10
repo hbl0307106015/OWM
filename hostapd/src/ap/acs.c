@@ -37,7 +37,6 @@
  */
 #include <math.h>
 
-#include <syslog.h>
 /*
  * Automatic Channel Selection
  *
@@ -91,7 +90,6 @@ static void acs_file_helper(const unsigned int ideal_chan)
 		return;
 	fprintf(fp, "%u", ideal_chan);
 	fclose(fp);
-	syslog(LOG_DEBUG, "wrote ideal channel:%d", ideal_chan);
 
 	/*read the helper pid and send a signal to it*/
 	unsigned int pid = 0;
@@ -242,8 +240,7 @@ struct hostapd_channel_data *acs_find_ideal_chan(struct hostapd_iface *iface)
 
 		wpa_printf(MSG_DEBUG, "\tChannel survey interference factor average: %Lf",
 			   chan->survey_interference_factor);
-		syslog(LOG_DEBUG, "\tChannel survey interference factor average: %Lf channel:%d (%d MHz)",
-			   chan->survey_interference_factor,chan->chan,chan->freq);
+
 
 		if (!ideal_chan)
 			ideal_chan = chan;
@@ -296,6 +293,7 @@ static enum hostapd_chan_status acs_study_next_freq(struct hostapd_iface *iface)
 
 static void acs_study_complete(struct hostapd_iface *iface)
 {
+	FILE *fp = NULL;
 	struct hostapd_channel_data *ideal_chan;
 
 	iface->acs_num_completed_surveys++;
@@ -333,10 +331,6 @@ static void acs_study_complete(struct hostapd_iface *iface)
 
 	wpa_printf(MSG_DEBUG, "-------------------------------------------------------------------------");
 	wpa_printf(MSG_INFO, "ACS: Ideal chan: %d (%d MHz) Average interference factor: %Lf",
-		   ideal_chan->chan,
-		   ideal_chan->freq,
-		   ideal_chan->survey_interference_factor);
-	syslog(LOG_DEBUG, "ACS: Ideal chan: %d (%d MHz) Average interference factor: %Lf",
 		   ideal_chan->chan,
 		   ideal_chan->freq,
 		   ideal_chan->survey_interference_factor);

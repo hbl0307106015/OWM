@@ -25,7 +25,9 @@
 #include "wpa_auth_i.h"
 #include "wpa_auth_ie.h"
 
-
+//Tymon added for wpa_auth.c
+#include "sta_info.h"
+#include "utils/via_utils.h"
 
 #define STATE_MACHINE_DATA struct wpa_state_machine
 #define STATE_MACHINE_DEBUG_PREFIX "WPA"
@@ -2163,10 +2165,10 @@ SM_STEP(WPA_PTK)
 			wpa_auth_vlogger(sm->wpa_auth, sm->addr, LOGGER_DEBUG,
 					 "PTKSTART: Retry limit %d reached",
 					 dot11RSNAConfigPairwiseUpdateCount);
-
-			//Tymon added for wpa_auth.c
-			capwap_printf(sm->wpa_auth->cb.ctx, sm->addr, 4);
-
+			//Tymon -added for wpa_auth.c
+			capwap_printf((struct hostapd_data *)sm->wpa_auth->cb.ctx, \
+				sm->addr, STA_RETRY_LIMIT);
+			
 			SM_ENTER(WPA_PTK, DISCONNECT);
 		} else if (sm->TimeoutEvt)
 			SM_ENTER(WPA_PTK, PTKSTART);
