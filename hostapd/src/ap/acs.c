@@ -83,7 +83,10 @@
 static void acs_file_helper(const unsigned int ideal_chan)
 {
 	FILE *fp = NULL;
-
+	unsigned int pid = 0;
+	char *ret = NULL;
+	char *pid_str = (char*)malloc(PID_MAX_LEN);
+	
 	/*recording the ideal channel information to /tmp/hostapd_acs.info*/
 	fp = fopen("/tmp/hostapd_acs.info","w+");
 	if(!fp)
@@ -92,9 +95,7 @@ static void acs_file_helper(const unsigned int ideal_chan)
 	fclose(fp);
 
 	/*read the helper pid and send a signal to it*/
-	unsigned int pid = 0;
-	char *ret = NULL;
-	char *pid_str = (char*)malloc(PID_MAX_LEN);
+	
 	fp = fopen("/var/run/helper_pid","r");
 	if(!fp)
 		return;
